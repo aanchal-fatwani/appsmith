@@ -83,6 +83,7 @@ class UserApi extends Api {
   static photoURL = "v1/users/photo";
   static featureFlagsURL = "v1/users/features";
   static superUserURL = "v1/users/super";
+  static adminSettingsURL = "v1/admin/env";
 
   static createUser(
     request: CreateUserRequest,
@@ -169,6 +170,16 @@ class UserApi extends Api {
     request: CreateSuperUserRequest,
   ): AxiosPromise<CreateUserResponse> {
     return Api.post(UserApi.superUserURL, request);
+  }
+  
+  static fetchSettings(): AxiosPromise<ApiResponse> {
+    return Api.get(UserApi.adminSettingsURL);
+  }
+
+  static saveAdminSettings(
+    request: Record<string, string>,
+  ): AxiosPromise<ApiResponse> {
+    return Api.put(UserApi.adminSettingsURL, request);
   }
 }
 

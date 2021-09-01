@@ -13,8 +13,11 @@ import {
 import { ReduxActionTypes } from "constants/ReduxActionConstants";
 import ProfileImage from "./ProfileImage";
 import { PopperModifiers } from "@blueprintjs/core";
-import { PROFILE } from "constants/routes";
+import { PROFILE, SETTINGS_CATEGORY_DEFAULT_URL } from "constants/routes";
 import UserApi from "api/UserApi";
+import { useSelector } from "react-redux";
+import { getCurrentUser } from "selectors/usersSelectors";
+
 type TagProps = CommonComponentProps & {
   onClick?: (text: string) => void;
   userName?: string;
@@ -74,6 +77,7 @@ const UserNameWrapper = styled.div`
 `;
 
 export default function ProfileDropdown(props: TagProps) {
+  const user = useSelector(getCurrentUser);
   const Profile = (
     <ProfileImage
       source={`/api/${UserApi.photoURL}`}
@@ -117,6 +121,18 @@ export default function ProfileDropdown(props: TagProps) {
           }}
           text="Edit Profile"
         />
+        {user?.isSuperUser && (
+          <MenuItem
+            className={`t--settings ${BlueprintClasses.POPOVER_DISMISS}`}
+            icon="setting"
+            onSelect={() => {
+              getOnSelectAction(DropdownOnSelectActions.REDIRECT, {
+                path: SETTINGS_CATEGORY_DEFAULT_URL,
+              });
+            }}
+            text="Settings"
+          />
+        )}
         <MenuItem
           className="t--logout-icon"
           icon="logout"

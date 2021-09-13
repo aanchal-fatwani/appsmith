@@ -199,7 +199,7 @@ SettingsFactory.register("APPSMITH_GOOGLE_MAPS_API_KEY", {
 SettingsFactory.register("APPSMITH_GOOGLE_MAPS_GUIDE", {
   category: "google-maps",
   controlType: SettingTypes.LINK,
-  label: "Guide to generate API Key",
+  label: "How to configure?",
   url: "https://www.google.com",
 });
 
@@ -234,10 +234,26 @@ SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_CLIENT_SECRET", {
   label: "Client Secret",
 });
 
+SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_GUIDE", {
+  category: "authentication",
+  subCategory: "google signup",
+  controlType: SettingTypes.LINK,
+  label: "How to configure?",
+  url: "https://www.google.com",
+});
+
 SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_CLIENT_ID", {
   category: "authentication",
   subCategory: "github signup",
   controlType: SettingTypes.TEXTINPUT,
   controlSubType: SettingSubtype.TEXT,
   label: "Client ID",
+});
+
+SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_GUIDE", {
+  category: "authentication",
+  subCategory: "github signup",
+  controlType: SettingTypes.LINK,
+  label: "How to configure?",
+  url: "https://www.google.com",
 });

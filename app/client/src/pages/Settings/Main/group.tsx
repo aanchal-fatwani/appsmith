@@ -15,7 +15,7 @@ const GroupWrapper = styled.div``;
 
 const GroupHeader = styled(StyledLabel)`
   text-transform: capitalize;
-  margin-bottom: ${(props) => props.theme.spaces[5]}px;
+  margin-bottom: ${(props) => props.theme.spaces[9]}px;
 `;
 
 const GroupBody = styled.div``;

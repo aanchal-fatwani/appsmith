@@ -171,7 +171,7 @@ class UserApi extends Api {
   ): AxiosPromise<CreateUserResponse> {
     return Api.post(UserApi.superUserURL, request);
   }
-  
+
   static fetchSettings(): AxiosPromise<ApiResponse> {
     return Api.get(UserApi.adminSettingsURL);
   }

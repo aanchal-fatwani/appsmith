@@ -5,6 +5,7 @@ import { StyledLabel } from "./Common";
 import Link from "./Link";
 import TextInput from "./TextInput";
 import Toggle from "./Toggle";
+import Text from "./Text";
 
 type GroupProps = {
   name?: string;
@@ -34,6 +35,8 @@ export default function Group({ name, settings }: GroupProps) {
                 return <Toggle key={setting.name} setting={setting} />;
               case SettingTypes.LINK:
                 return <Link key={setting.name} setting={setting} />;
+              case SettingTypes.TEXT:
+                return <Text key={setting.name} setting={setting} />;
               case SettingTypes.GROUP:
                 return (
                   <Group name={setting.name} settings={setting.children} />

@@ -4,7 +4,8 @@ import { Toaster } from "components/ads/Toast";
 import { ReduxAction, ReduxActionTypes } from "constants/ReduxActionConstants";
 import { APPLICATIONS_URL } from "constants/routes";
 import { User } from "constants/userConstants";
-import { takeLatest, all, call, put } from "redux-saga/effects";
+import { takeLatest, all, call, put, select } from "redux-saga/effects";
+import { getCurrentVersion } from "selectors/settingsSelectors";
 import history from "utils/history";
 import { validateResponse } from "./ErrorSagas";
 
@@ -13,9 +14,18 @@ function* FetchAdminSettingsSaga() {
   const isValidResponse = yield validateResponse(response);
 
   if (isValidResponse) {
+    const currentVersion = yield select(getCurrentVersion);
+    let currentVersionTagName;
+    if (currentVersion) {
+      currentVersionTagName = currentVersion.tagName;
+    }
+    const settings = {
+      ...response.data,
+      APPSMITH_CURRENT_VERSION: currentVersionTagName,
+    };
     yield put({
       type: ReduxActionTypes.FETCH_ADMIN_SETTINGS_SUCCESS,
-      payload: response.data,
+      payload: settings,
     });
   } else {
     yield put({

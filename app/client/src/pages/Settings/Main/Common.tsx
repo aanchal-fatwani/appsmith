@@ -27,7 +27,7 @@ export const StyledFormGroup = styled.div`
     width: 14px;
     padding: 3px 3px;
     position: relative;
-    top: -1px;
+    top: -2px;
     left: 6px;
     cursor: default;
   }

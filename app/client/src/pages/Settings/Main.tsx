@@ -43,9 +43,7 @@ const BackButton = styled.div`
 
 const BackButtonText = styled.span``;
 
-const SettingsFormWrapper = styled.div`
-  margin-top: 32px;
-`;
+const SettingsFormWrapper = styled.div``;
 
 const SettingsButtonWrapper = styled.div``;
 
@@ -83,8 +81,8 @@ export function Main(
   props: InjectedFormProps & RouteComponentProps & MainProps,
 ) {
   const { category } = useParams() as any;
-  const config = useSelector(getSettings);
-  const settings = useSettings(config, category);
+  const settingsConfig = useSelector(getSettings);
+  const settings = useSettings(settingsConfig, category);
   const isSaving = useSelector(getSettingsSavingState);
   const dispatch = useDispatch();
 
@@ -96,11 +94,7 @@ export function Main(
   };
 
   const onClear = () => {
-    const initialValues: Record<string, string | boolean> = {};
-    settings.forEach((setting) => {
-      initialValues[setting.name] = setting.value;
-    });
-    props.initialize(initialValues);
+    props.initialize(settingsConfig);
   };
 
   useEffect(onClear, [category]);
@@ -154,16 +148,15 @@ const validate = (values: Record<string, any>) => {
 const selector = formValueSelector(SETTINGS_FORM_NAME);
 export default withRouter(
   connect((state: AppState, props: RouteComponentProps) => {
-    const category = (props.match.params as any).category;
-    const settings = useSettings(getSettings(state), category);
+    const settingsConfig = getSettings(state);
     const newProps: any = {
       settings: {},
     };
-    settings.forEach((setting) => {
-      const fieldValue = selector(state, setting.name);
+    _.forEach(SettingsFactory.settingsMap, (setting, name) => {
+      const fieldValue = selector(state, name);
 
-      if (fieldValue != setting.value) {
-        newProps.settings[setting.name] = selector(state, setting.name);
+      if (fieldValue != settingsConfig[name]) {
+        newProps.settings[name] = fieldValue;
       }
     });
     return newProps;

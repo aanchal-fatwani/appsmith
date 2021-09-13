@@ -7,6 +7,7 @@ export enum SettingTypes {
   LINK = "LINK",
   BUTTON = "BUTTON",
   GROUP = "GROUP",
+  TEXT = "TEXT",
 }
 
 export enum SettingSubtype {
@@ -28,6 +29,7 @@ export type Setting = {
   url?: string;
   children?: any;
   subCategory?: string;
+  value?: string;
 };
 
 export class SettingsFactory {
@@ -196,7 +198,7 @@ SettingsFactory.register("APPSMITH_GOOGLE_MAPS_API_KEY", {
   label: "API Key",
 });
 
-SettingsFactory.register("APPSMITH_GOOGLE_MAPS_GUIDE", {
+SettingsFactory.register("APPSMITH_GOOGLE_MAPS_READ_MORE", {
   category: "google-maps",
   controlType: SettingTypes.LINK,
   label: "How to configure?",
@@ -234,7 +236,7 @@ SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_CLIENT_SECRET", {
   label: "Client Secret",
 });
 
-SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_GUIDE", {
+SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_READ_MORE", {
   category: "authentication",
   subCategory: "google signup",
   controlType: SettingTypes.LINK,
@@ -250,10 +252,24 @@ SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_CLIENT_ID", {
   label: "Client ID",
 });
 
-SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_GUIDE", {
+SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_READ_MORE", {
   category: "authentication",
   subCategory: "github signup",
   controlType: SettingTypes.LINK,
   label: "How to configure?",
+  url: "https://www.google.com",
+});
+
+//version
+SettingsFactory.register("APPSMITH_CURRENT_VERSION", {
+  category: "version",
+  controlType: SettingTypes.TEXT,
+  label: "Current version",
+});
+
+SettingsFactory.register("APPSMITH_VERSION_READ_MORE", {
+  category: "version",
+  controlType: SettingTypes.LINK,
+  label: "Release Notes",
   url: "https://www.google.com",
 });

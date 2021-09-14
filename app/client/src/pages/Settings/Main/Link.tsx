@@ -1,6 +1,7 @@
 import { Icon } from "@blueprintjs/core";
 import Text, { TextType } from "components/ads/Text";
 import React from "react";
+import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Setting } from "../SettingsConfig";
 import { FormGroup, SettingComponentProps } from "./Common";
@@ -37,10 +38,22 @@ const StyledIcon = styled(Icon)`
 `;
 
 export default function Link({ setting }: SettingComponentProps) {
+  const dispatch = useDispatch();
+  const linkProps: Record<string, string | (() => any)> = {};
+  if (setting.url) {
+    linkProps.href = setting.url;
+    linkProps.target = "_blank";
+  } else if (setting.action) {
+    linkProps.onClick = () => {
+      if (setting.action) {
+        dispatch(setting.action());
+      }
+    };
+  }
   return (
     <FormGroup label={setting.label}>
       <LinkWrapper>
-        <StyledLink href={setting.url} target="_blank">
+        <StyledLink {...linkProps}>
           <StyledText type={TextType.P1}>READ MORE</StyledText>
           &nbsp;
           <StyledIcon icon="arrow-right" iconSize={11} />

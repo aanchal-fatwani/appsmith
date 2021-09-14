@@ -85,6 +85,7 @@ export function Main(
   const settings = useSettings(settingsConfig, category);
   const isSaving = useSelector(getSettingsSavingState);
   const dispatch = useDispatch();
+  const isSavable = SettingsFactory.savableCategories.has(category);
 
   const onBack = () => {
     history.push(APPLICATIONS_URL);
@@ -111,23 +112,25 @@ export function Main(
       </BackButton>
       <SettingsFormWrapper>
         <Group settings={settings} />
-        <SettingsButtonWrapper>
-          <StyledSaveButton
-            category={Category.primary}
-            disabled={Object.keys(props.settings).length == 0 || !props.valid}
-            isLoading={isSaving}
-            onClick={onSave}
-            tag="button"
-            text={createMessage(() => "Save changes")}
-          />
-          <StyledClearButton
-            category={Category.tertiary}
-            disabled={Object.keys(props.settings).length == 0}
-            onClick={onClear}
-            tag="button"
-            text={createMessage(() => "Clear")}
-          />
-        </SettingsButtonWrapper>
+        {isSavable && (
+          <SettingsButtonWrapper>
+            <StyledSaveButton
+              category={Category.primary}
+              disabled={Object.keys(props.settings).length == 0 || !props.valid}
+              isLoading={isSaving}
+              onClick={onSave}
+              tag="button"
+              text={createMessage(() => "Save changes")}
+            />
+            <StyledClearButton
+              category={Category.tertiary}
+              disabled={Object.keys(props.settings).length == 0}
+              onClick={onClear}
+              tag="button"
+              text={createMessage(() => "Clear")}
+            />
+          </SettingsButtonWrapper>
+        )}
         <BottomSpace />
       </SettingsFormWrapper>
     </Wrapper>

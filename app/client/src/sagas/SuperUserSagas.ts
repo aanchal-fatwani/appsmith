@@ -3,7 +3,9 @@ import { Variant } from "components/ads/common";
 import { Toaster } from "components/ads/Toast";
 import { ReduxAction, ReduxActionTypes } from "constants/ReduxActionConstants";
 import { APPLICATIONS_URL } from "constants/routes";
+import { GET_RELEASE_NOTES_URL } from "constants/ThirdPartyConstants";
 import { User } from "constants/userConstants";
+import { debug } from "loglevel";
 import { takeLatest, all, call, put, select } from "redux-saga/effects";
 import { getCurrentVersion } from "selectors/settingsSelectors";
 import history from "utils/history";
@@ -63,6 +65,19 @@ function* SaveAdminSettingsSaga(action: ReduxAction<Record<string, string>>) {
   }
 }
 
+function* DownloadDockerComposeFile() {
+  debug;
+}
+
+function* RedirectToReleaseNotes() {
+  const currentVersion = yield select(getCurrentVersion);
+  if (currentVersion) {
+    window
+      .open(GET_RELEASE_NOTES_URL(currentVersion.tagName), "_blank")
+      ?.focus();
+  }
+}
+
 function* InitSuperUserSaga(action: ReduxAction<User>) {
   const user = action.payload;
   if (user.isSuperUser) {
@@ -73,6 +88,14 @@ function* InitSuperUserSaga(action: ReduxAction<User>) {
         FetchAdminSettingsErrorSaga,
       ),
       takeLatest(ReduxActionTypes.SAVE_ADMIN_SETTINGS, SaveAdminSettingsSaga),
+      takeLatest(
+        ReduxActionTypes.DOWNLOAD_DOCKER_COMPOSE_FILE,
+        DownloadDockerComposeFile,
+      ),
+      takeLatest(
+        ReduxActionTypes.REDIRECT_TO_RELEASE_NOTES,
+        RedirectToReleaseNotes,
+      ),
     ]);
   }
 }

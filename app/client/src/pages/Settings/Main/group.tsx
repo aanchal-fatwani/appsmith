@@ -6,6 +6,7 @@ import Link from "./Link";
 import TextInput from "./TextInput";
 import Toggle from "./Toggle";
 import Text from "./Text";
+import Button from "./Button";
 
 type GroupProps = {
   name?: string;
@@ -37,6 +38,8 @@ export default function Group({ name, settings }: GroupProps) {
                 return <Link key={setting.name} setting={setting} />;
               case SettingTypes.TEXT:
                 return <Text key={setting.name} setting={setting} />;
+              case SettingTypes.BUTTON:
+                return <Button key={setting.name} setting={setting} />;
               case SettingTypes.GROUP:
                 return (
                   <Group name={setting.name} settings={setting.children} />

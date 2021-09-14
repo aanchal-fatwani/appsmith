@@ -1,3 +1,9 @@
+import { ReduxAction, ReduxActionTypes } from "constants/ReduxActionConstants";
+import {
+  GITHUB_SIGNUP_SETUP_DOC,
+  GOOGLE_MAPS_SETUP_DOC,
+  GOOGLE_SIGNUP_SETUP_DOC,
+} from "constants/ThirdPartyConstants";
 import _ from "lodash";
 import { isEmail } from "utils/formhelpers";
 
@@ -30,15 +36,25 @@ export type Setting = {
   children?: any;
   subCategory?: string;
   value?: string;
+  text?: string;
+  action?: () => Partial<ReduxAction<any>>;
 };
 
 export class SettingsFactory {
   static settingsMap: Record<string, Setting> = {};
   static categories: Set<string> = new Set();
+  static savableCategories: Set<string> = new Set();
 
   static register(name: string, options: Setting) {
     SettingsFactory.categories.add(options.category);
     SettingsFactory.settingsMap[name] = options;
+    if (
+      options.controlType !== SettingTypes.GROUP &&
+      options.controlType !== SettingTypes.LINK &&
+      options.controlType !== SettingTypes.TEXT
+    ) {
+      SettingsFactory.savableCategories.add(options.category);
+    }
   }
 
   static validate(name: string, value: string) {
@@ -184,6 +200,14 @@ SettingsFactory.register("APPSMITH_ADMIN_EMAILS", {
   },
 });
 
+SettingsFactory.register("APPSMITH_DOWNLOAD_DOCKER_COMPOSE_FILE", {
+  action: () => ({ type: ReduxActionTypes.DOWNLOAD_DOCKER_COMPOSE_FILE }),
+  category: "general",
+  controlType: SettingTypes.BUTTON,
+  label: "Generated Docker Compose File",
+  text: "Download",
+});
+
 SettingsFactory.register("APPSMITH_DISABLE_TELEMETRY", {
   category: "general",
   controlType: SettingTypes.TOGGLE,
@@ -202,7 +226,7 @@ SettingsFactory.register("APPSMITH_GOOGLE_MAPS_READ_MORE", {
   category: "google-maps",
   controlType: SettingTypes.LINK,
   label: "How to configure?",
-  url: "https://www.google.com",
+  url: GOOGLE_MAPS_SETUP_DOC,
 });
 
 //authentication
@@ -241,7 +265,7 @@ SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_READ_MORE", {
   subCategory: "google signup",
   controlType: SettingTypes.LINK,
   label: "How to configure?",
-  url: "https://www.google.com",
+  url: GOOGLE_SIGNUP_SETUP_DOC,
 });
 
 SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_CLIENT_ID", {
@@ -257,7 +281,7 @@ SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_READ_MORE", {
   subCategory: "github signup",
   controlType: SettingTypes.LINK,
   label: "How to configure?",
-  url: "https://www.google.com",
+  url: GITHUB_SIGNUP_SETUP_DOC,
 });
 
 //version
@@ -268,8 +292,8 @@ SettingsFactory.register("APPSMITH_CURRENT_VERSION", {
 });
 
 SettingsFactory.register("APPSMITH_VERSION_READ_MORE", {
+  action: () => ({ type: ReduxActionTypes.REDIRECT_TO_RELEASE_NOTES }),
   category: "version",
   controlType: SettingTypes.LINK,
   label: "Release Notes",
-  url: "https://www.google.com",
 });

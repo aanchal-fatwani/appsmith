@@ -45,7 +45,12 @@ const BackButtonText = styled.span``;
 
 const SettingsFormWrapper = styled.div``;
 
-const SettingsButtonWrapper = styled.div``;
+const SettingsButtonWrapper = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+`;
 
 const StyledButton = styled(Button)`
   height: 24px;

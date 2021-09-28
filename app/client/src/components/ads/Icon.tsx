@@ -223,12 +223,9 @@ export const IconCollection = [
   "tables",
   "column",
   "support",
-<<<<<<< HEAD
   "git-branch",
   "snippet",
-=======
   "setting",
->>>>>>> f7b292f8b (feat: Introduce Setting page for a super user to tinker with appsmith env variables)
 ] as const;
 
 export type IconName = typeof IconCollection[number];

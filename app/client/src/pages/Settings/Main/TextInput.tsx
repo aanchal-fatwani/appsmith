@@ -5,10 +5,7 @@ import { FormGroup, SettingComponentProps } from "./Common";
 
 export default function TextInput({ setting }: SettingComponentProps) {
   return (
-    <FormGroup
-      helpText={setting.helpText}
-      label={createMessage(() => setting.label)}
-    >
+    <FormGroup setting={setting}>
       <FormTextField
         name={setting.name || ""}
         placeholder={createMessage(() => setting.placeholder || "")}

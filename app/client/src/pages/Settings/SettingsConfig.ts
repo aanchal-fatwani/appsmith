@@ -1,5 +1,6 @@
 import { ReduxAction, ReduxActionTypes } from "constants/ReduxActionConstants";
 import {
+  EMAIL_SETUP_DOC,
   GITHUB_SIGNUP_SETUP_DOC,
   GOOGLE_MAPS_SETUP_DOC,
   GOOGLE_SIGNUP_SETUP_DOC,
@@ -28,7 +29,7 @@ export type Setting = {
   controlType: SettingTypes;
   controlSubType?: SettingSubtype;
   helpText?: string;
-  label: string;
+  label?: string;
   name?: string;
   placeholder?: string;
   validate?: (value: string, setting?: Setting) => string | void;
@@ -38,16 +39,24 @@ export type Setting = {
   value?: string;
   text?: string;
   action?: () => Partial<ReduxAction<any>>;
+  sortOrder?: number;
+  subText?: string;
+  toggleText?: (value: boolean) => string;
+  isVisible?: (values: Record<string, any>) => boolean;
 };
 
 export class SettingsFactory {
   static settingsMap: Record<string, Setting> = {};
   static categories: Set<string> = new Set();
   static savableCategories: Set<string> = new Set();
+  static sortOrder = 0;
 
   static register(name: string, options: Setting) {
     SettingsFactory.categories.add(options.category);
-    SettingsFactory.settingsMap[name] = options;
+    SettingsFactory.settingsMap[name] = {
+      ...options,
+      sortOrder: ++SettingsFactory.sortOrder,
+    };
     if (
       options.controlType !== SettingTypes.GROUP &&
       options.controlType !== SettingTypes.LINK &&
@@ -108,12 +117,19 @@ export class SettingsFactory {
 }
 
 //EMAIL
+SettingsFactory.register("APPSMITH_MAIL_READ_MORE", {
+  category: "email",
+  controlType: SettingTypes.LINK,
+  label: "How to configure?",
+  url: EMAIL_SETUP_DOC,
+});
+
 SettingsFactory.register("APPSMITH_MAIL_HOST", {
   category: "email",
   controlType: SettingTypes.TEXTINPUT,
   controlSubType: SettingSubtype.TEXT,
   label: "SMTP Host",
-  placeholder: "smtp.yourservice.com",
+  placeholder: "email-smtp.us-east-2.amazonaws.com",
   validate: (value: string) => {
     if (
       value &&
@@ -138,6 +154,21 @@ SettingsFactory.register("APPSMITH_MAIL_PORT", {
   },
 });
 
+SettingsFactory.register("APPSMITH_MAIL_FROM", {
+  category: "email",
+  controlType: SettingTypes.TEXTINPUT,
+  controlSubType: SettingSubtype.TEXT,
+  label: "From Address",
+  placeholder: "admin@appsmith.com",
+  validate: (value: string) => {
+    if (value && !isEmail(value)) {
+      return "Please enter a valid email id";
+    }
+  },
+  subText:
+    "You will need to verify your from email address to begin sending emails",
+});
+
 SettingsFactory.register("APPSMITH_MAIL_SMTP_TLS_ENABLED", {
   category: "email",
   controlType: SettingTypes.TOGGLE,
@@ -149,7 +180,9 @@ SettingsFactory.register("APPSMITH_MAIL_USERNAME", {
   controlType: SettingTypes.TEXTINPUT,
   controlSubType: SettingSubtype.TEXT,
   label: "SMTP Username",
-  placeholder: "smtp.yourservice.com",
+  isVisible: (values: Record<string, any>) => {
+    return values && values["APPSMITH_MAIL_SMTP_TLS_ENABLED"];
+  },
 });
 
 SettingsFactory.register("APPSMITH_MAIL_PASSWORD", {
@@ -157,19 +190,8 @@ SettingsFactory.register("APPSMITH_MAIL_PASSWORD", {
   controlType: SettingTypes.TEXTINPUT,
   controlSubType: SettingSubtype.PASSWORD,
   label: "SMTP Password",
-  placeholder: "smtp.yourservice.com",
-});
-
-SettingsFactory.register("APPSMITH_MAIL_FROM", {
-  category: "email",
-  controlType: SettingTypes.TEXTINPUT,
-  controlSubType: SettingSubtype.TEXT,
-  label: "From Address",
-  placeholder: "smtp.yourservice.com",
-  validate: (value: string) => {
-    if (value && !isEmail(value)) {
-      return "Please enter a valid email id";
-    }
+  isVisible: (values: Record<string, any>) => {
+    return values && values["APPSMITH_MAIL_SMTP_TLS_ENABLED"];
   },
 });
 
@@ -187,7 +209,9 @@ SettingsFactory.register("APPSMITH_ADMIN_EMAILS", {
   controlType: SettingTypes.TEXTINPUT,
   controlSubType: SettingSubtype.EMAIL,
   label: "Admin Email",
-  helpText: "Comma seperated email Ids",
+  subText:
+    "Emails of the users who can modify instance settings (Comma Separated)",
+  placeholder: "Jane@example.com",
   validate: (value: string) => {
     if (
       value &&
@@ -211,17 +235,18 @@ SettingsFactory.register("APPSMITH_DOWNLOAD_DOCKER_COMPOSE_FILE", {
 SettingsFactory.register("APPSMITH_DISABLE_TELEMETRY", {
   category: "general",
   controlType: SettingTypes.TOGGLE,
-  label: "Anonymous Tracking",
+  label: "Share Anonymous Usage Data",
+  subText: "Share anonymous usage data to help improve the product",
+  toggleText: (value: boolean) => {
+    if (value) {
+      return "Share data & make appsmith better!";
+    } else {
+      return "Don't share any data";
+    }
+  },
 });
 
 //goolge maps
-SettingsFactory.register("APPSMITH_GOOGLE_MAPS_API_KEY", {
-  category: "google-maps",
-  controlType: SettingTypes.TEXTINPUT,
-  controlSubType: SettingSubtype.TEXT,
-  label: "API Key",
-});
-
 SettingsFactory.register("APPSMITH_GOOGLE_MAPS_READ_MORE", {
   category: "google-maps",
   controlType: SettingTypes.LINK,
@@ -229,11 +254,34 @@ SettingsFactory.register("APPSMITH_GOOGLE_MAPS_READ_MORE", {
   url: GOOGLE_MAPS_SETUP_DOC,
 });
 
+SettingsFactory.register("APPSMITH_GOOGLE_MAPS_API_KEY", {
+  category: "google-maps",
+  controlType: SettingTypes.TEXTINPUT,
+  controlSubType: SettingSubtype.TEXT,
+  label: "Google Maps API Key",
+});
+
 //authentication
 SettingsFactory.register("APPSMITH_SIGNUP_DISABLED", {
   category: "authentication",
+  subCategory: "form signup",
   controlType: SettingTypes.TOGGLE,
-  label: "Form Signup",
+  label: "Allow Signup",
+  toggleText: (value: boolean) => {
+    if (value) {
+      return " Allow all users to signup";
+    } else {
+      return "Allow invited users to signup";
+    }
+  },
+});
+
+SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_READ_MORE", {
+  category: "authentication",
+  subCategory: "google signup",
+  controlType: SettingTypes.LINK,
+  label: "How to configure?",
+  url: GOOGLE_SIGNUP_SETUP_DOC,
 });
 
 SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_CLIENT_ID", {
@@ -260,12 +308,12 @@ SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_CLIENT_SECRET", {
   label: "Client Secret",
 });
 
-SettingsFactory.register("APPSMITH_OAUTH2_GOOGLE_READ_MORE", {
+SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_READ_MORE", {
   category: "authentication",
-  subCategory: "google signup",
+  subCategory: "github signup",
   controlType: SettingTypes.LINK,
   label: "How to configure?",
-  url: GOOGLE_SIGNUP_SETUP_DOC,
+  url: GITHUB_SIGNUP_SETUP_DOC,
 });
 
 SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_CLIENT_ID", {
@@ -274,14 +322,6 @@ SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_CLIENT_ID", {
   controlType: SettingTypes.TEXTINPUT,
   controlSubType: SettingSubtype.TEXT,
   label: "Client ID",
-});
-
-SettingsFactory.register("APPSMITH_OAUTH2_GITHUB_READ_MORE", {
-  category: "authentication",
-  subCategory: "github signup",
-  controlType: SettingTypes.LINK,
-  label: "How to configure?",
-  url: GITHUB_SIGNUP_SETUP_DOC,
 });
 
 //version
@@ -296,4 +336,23 @@ SettingsFactory.register("APPSMITH_VERSION_READ_MORE", {
   category: "version",
   controlType: SettingTypes.LINK,
   label: "Release Notes",
+});
+
+//Advanced
+SettingsFactory.register("APPSMITH_MONGODB_URI", {
+  category: "advanced",
+  controlType: SettingTypes.TEXTINPUT,
+  controlSubType: SettingSubtype.TEXT,
+  label: "MongoDB URI",
+  subText:
+    "Appsmith internally uses mongo DB. Change to an external MongoDb for Clustering",
+});
+
+SettingsFactory.register("APPSMITH_REDIS_URL", {
+  category: "advanced",
+  controlType: SettingTypes.TEXTINPUT,
+  controlSubType: SettingSubtype.TEXT,
+  label: "Redis URL",
+  subText:
+    "Appsmith internally uses redis for session storage. Change this to an external redis for Clustering",
 });

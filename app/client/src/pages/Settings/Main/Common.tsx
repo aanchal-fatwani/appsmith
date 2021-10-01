@@ -5,10 +5,12 @@ import styled from "styled-components";
 import Icon, { IconSize } from "components/ads/Icon";
 import { getTypographyByKey } from "constants/DefaultTheme";
 import { Setting } from "../SettingsConfig";
+import { useSelector } from "store";
+import { getSettings } from "selectors/settingsSelectors";
+import { Colors } from "constants/Colors";
 
 type FieldHelperProps = {
-  helpText?: string;
-  label: string;
+  setting: Setting;
   children: React.ReactNode;
 };
 
@@ -46,16 +48,23 @@ export const StyledLabel = styled.label`
   color: ${(props) => props.theme.colors.textInput.normal.text};
 `;
 
-export function FormGroup({ children, helpText, label }: FieldHelperProps) {
+export const StyledSubtext = styled.p`
+  font-size: 12px;
+  color: ${Colors.GRAY};
+  transform: translate(0px, -12px);
+`;
+
+export function FormGroup({ children, setting }: FieldHelperProps) {
   return (
     <StyledFormGroup>
-      <StyledLabel>{label}</StyledLabel>
-      {helpText && (
-        <Tooltip content={createMessage(() => helpText)}>
+      <StyledLabel>{setting.label}</StyledLabel>
+      {setting.helpText && (
+        <Tooltip content={createMessage(() => setting.helpText || "")}>
           <StyledIcon fillColor="#fff" name="help" size={IconSize.XXS} />
         </Tooltip>
       )}
       {children}
+      {setting.subText && <StyledSubtext>* {setting.subText}</StyledSubtext>}
     </StyledFormGroup>
   );
 }

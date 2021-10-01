@@ -26,7 +26,7 @@ import {
 import styled from "styled-components";
 import history from "utils/history";
 import Group from "./Main/group";
-import { SettingsFactory } from "./SettingsConfig";
+import { SettingsFactory, SettingTypes } from "./SettingsConfig";
 
 const Wrapper = styled.div`
   flex-basis: calc(100% - ${(props) => props.theme.homePage.leftPane.width}px);
@@ -34,6 +34,8 @@ const Wrapper = styled.div`
     props.theme.homePage.leftPane.rightMargin +
     props.theme.homePage.leftPane.leftPadding}px;
   padding-top: 40px;
+  height: calc(100vh - ${(props) => props.theme.homePage.header}px);
+  overflow: auto;
 `;
 
 const BackButton = styled.div`
@@ -50,6 +52,16 @@ const SettingsButtonWrapper = styled.div`
   bottom: 0;
   left: 0;
   width: 100%;
+  height: ${(props) => props.theme.settings.footerHeight}px;
+  padding: ${(props) => props.theme.spaces[11]}px 0px 0px
+    ${(props) =>
+      props.theme.spaces[6] +
+      props.theme.homePage.leftPane.leftPadding +
+      props.theme.homePage.leftPane.rightMargin +
+      props.theme.homePage.leftPane.width}px;
+  box-shadow: ${(props) => props.theme.settings.footerShadow};
+  z-index: 2;
+  background-color: ${(props) => props.theme.colors.homepageBackground};
 `;
 
 const StyledButton = styled(Button)`
@@ -60,26 +72,40 @@ const StyledButton = styled(Button)`
 
 const StyledSaveButton = styled(StyledButton)`
   width: 118px;
+  height: 38px;
 `;
 
 const StyledClearButton = styled(StyledButton)`
   width: 68px;
+  height: 38px;
 `;
 
 export const BottomSpace = styled.div`
-  height: 20px;
+  height: ${(props) => props.theme.settings.footerHeight}px;
+`;
+
+export const SettingsHeader = styled.h2`
+  font-size: 24px;
+  font-weight: 500;
+  text-transform: capitalize;
+  margin-bottom: 0;
 `;
 
 type MainProps = {
   settings: Record<string, string>;
 };
 
-function createSettingLabel(name = "") {
-  return name.replace(/_/g, " ").toUpperCase();
+function getSettingLabel(name = "") {
+  return name.replace(/-/g, " ");
 }
 
-function useSettings(config: Record<string, string>, category: string) {
-  return SettingsFactory.get(config, category);
+function useSettings(
+  config: Record<string, string | boolean>,
+  category: string,
+) {
+  return SettingsFactory.get(config, category).sort((a, b) =>
+    a.sortOrder < b.sortOrder ? -1 : 1,
+  );
 }
 
 export function Main(
@@ -100,6 +126,13 @@ export function Main(
   };
 
   const onClear = () => {
+    _.forEach(settingsConfig, (value, settingName) => {
+      const setting = SettingsFactory.settingsMap[settingName];
+      if (setting && setting.controlType == SettingTypes.TOGGLE) {
+        settingsConfig[settingName] =
+          settingsConfig[settingName].toString() == "true";
+      }
+    });
     props.initialize(settingsConfig);
   };
 
@@ -116,6 +149,7 @@ export function Main(
         <BackButtonText>&nbsp;Back</BackButtonText>
       </BackButton>
       <SettingsFormWrapper>
+        <SettingsHeader>{getSettingLabel(category)} settings</SettingsHeader>
         <Group settings={settings} />
         {isSavable && (
           <SettingsButtonWrapper>
@@ -163,7 +197,7 @@ export default withRouter(
     _.forEach(SettingsFactory.settingsMap, (setting, name) => {
       const fieldValue = selector(state, name);
 
-      if (fieldValue != settingsConfig[name]) {
+      if (fieldValue !== settingsConfig[name]) {
         newProps.settings[name] = fieldValue;
       }
     });

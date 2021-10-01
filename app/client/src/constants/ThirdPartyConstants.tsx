@@ -14,3 +14,4 @@ export const GOOGLE_SIGNUP_SETUP_DOC =
   "https://docs.appsmith.com/setup/docker/google-login";
 export const GITHUB_SIGNUP_SETUP_DOC =
   "https://docs.appsmith.com/setup/docker/github-login";
+export const EMAIL_SETUP_DOC = "https://docs.appsmith.com/setup/docker/email";

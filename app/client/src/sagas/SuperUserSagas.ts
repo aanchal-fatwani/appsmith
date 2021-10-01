@@ -43,10 +43,6 @@ function* FetchAdminSettingsErrorSaga() {
 
 function* SaveAdminSettingsSaga(action: ReduxAction<Record<string, string>>) {
   const settings = action.payload;
-  yield put({
-    type: ReduxActionTypes.FETCH_ADMIN_SETTINGS_SUCCESS,
-    payload: settings,
-  });
   const response = yield call(UserApi.saveAdminSettings, settings);
   const isValidResponse = yield validateResponse(response);
 
@@ -57,6 +53,10 @@ function* SaveAdminSettingsSaga(action: ReduxAction<Record<string, string>>) {
     });
     yield put({
       type: ReduxActionTypes.SAVE_ADMIN_SETTINGS_SUCCESS,
+    });
+    yield put({
+      type: ReduxActionTypes.FETCH_ADMIN_SETTINGS_SUCCESS,
+      payload: settings,
     });
   } else {
     yield put({

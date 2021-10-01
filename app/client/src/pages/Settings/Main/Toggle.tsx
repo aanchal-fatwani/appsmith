@@ -1,5 +1,5 @@
 import { createMessage } from "constants/messages";
-import React from "react";
+import React, { memo } from "react";
 import {
   Field,
   WrappedFieldInputProps,
@@ -18,40 +18,56 @@ const ToggleStatus = styled.span`
   left: 68px;
 `;
 
-function FieldToggle(
-  ComponentProps: FormTextFieldProps & {
-    meta: Partial<WrappedFieldMetaProps>;
-    input: Partial<WrappedFieldInputProps>;
-  },
-) {
-  function onToggle(value?: boolean) {
-    ComponentProps.input.onChange && ComponentProps.input.onChange(value);
-    ComponentProps.input.onBlur && ComponentProps.input.onBlur(value);
-  }
-  return (
-    <ToggleWrapper>
-      <Toggle onToggle={onToggle} value={ComponentProps.input.value} />
-      <ToggleStatus>
-        {ComponentProps.input.value ? "Enabled" : "Disabled"}
-      </ToggleStatus>
-    </ToggleWrapper>
-  );
+function FieldToggleWithToggleText(toggleText?: (value: boolean) => string) {
+  return function FieldToggle(
+    ComponentProps: FormTextFieldProps & {
+      meta: Partial<WrappedFieldMetaProps>;
+      input: Partial<WrappedFieldInputProps>;
+    },
+  ) {
+    function onToggle(value?: boolean) {
+      ComponentProps.input.onChange && ComponentProps.input.onChange(value);
+      ComponentProps.input.onBlur && ComponentProps.input.onBlur(value);
+    }
+    return (
+      <ToggleWrapper>
+        <Toggle onToggle={onToggle} value={ComponentProps.input.value} />
+        <ToggleStatus>
+          {typeof toggleText == "function"
+            ? toggleText(ComponentProps.input.value)
+            : ComponentProps.input.value
+            ? "Enabled"
+            : "Disabled"}
+        </ToggleStatus>
+      </ToggleWrapper>
+    );
+  };
 }
 
 const StyledFieldToggleGroup = styled.div`
-  margin-bottom: 32px;
+  margin-bottom: 8px;
 
   & .slider {
     margin-top: 10px;
   }
 `;
 
-export default function ToggleComponent({ setting }: SettingComponentProps) {
+const Spacing = styled.div`
+  height: 20px;
+`;
+
+function ToggleComponent({ setting }: SettingComponentProps) {
   return (
     <StyledFieldToggleGroup>
-      <FormGroup label={createMessage(() => setting.label)}>
-        <Field component={FieldToggle} name={setting.name} />
+      <FormGroup setting={setting}>
+        <Field
+          component={FieldToggleWithToggleText(setting.toggleText)}
+          name={setting.name}
+        />
+        <Spacing />
       </FormGroup>
     </StyledFieldToggleGroup>
   );
 }
+
+export default memo(ToggleComponent);

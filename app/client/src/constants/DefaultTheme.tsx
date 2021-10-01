@@ -454,6 +454,11 @@ export type Theme = {
   onboarding: {
     statusBarHeight: number;
   };
+  settings: {
+    footerHeight: number;
+    footerShadow: string;
+    linkBg: string;
+  };
 };
 
 type IconSizeType = {
@@ -3024,6 +3029,11 @@ export const theme: Theme = {
   },
   onboarding: {
     statusBarHeight: 83,
+  },
+  settings: {
+    footerHeight: 84,
+    footerShadow: "0px 0px 18px -6px rgb(0, 0, 0, 0.25)",
+    linkBg: lightShades[2],
   },
 };
 

@@ -13,7 +13,7 @@ const StyledText = styled(Text)`
 
 export default function Link({ setting }: SettingComponentProps) {
   return (
-    <FormGroup label={setting.label}>
+    <FormGroup setting={setting}>
       <TextWrapper>
         <StyledText type={TextType.P1}>{setting.value}</StyledText>
       </TextWrapper>

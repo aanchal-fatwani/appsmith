@@ -6,7 +6,7 @@ import { FormGroup, SettingComponentProps } from "./Common";
 
 const ButtonWrapper = styled.div`
   width: 357px;
-  margin-bottom: ${(props) => props.theme.spaces[13]}px;
+  margin-bottom: ${(props) => props.theme.spaces[12]}px;
   margin-top: 3px;
 `;
 
@@ -19,7 +19,7 @@ const StyledButton = styled(Button)`
 export default function ButtonComponent({ setting }: SettingComponentProps) {
   const dispatch = useDispatch();
   return (
-    <FormGroup label={setting.label}>
+    <FormGroup setting={setting}>
       <ButtonWrapper>
         <StyledButton
           category={Category.tertiary}

@@ -11,7 +11,7 @@ export interface SettingsReduxState {
   isLoading: boolean;
   isSaving: boolean;
   config: {
-    [key: string]: string;
+    [key: string]: string | boolean;
   };
 }
 

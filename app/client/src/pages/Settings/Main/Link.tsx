@@ -7,9 +7,11 @@ import { Setting } from "../SettingsConfig";
 import { FormGroup, SettingComponentProps } from "./Common";
 
 const LinkWrapper = styled.div`
-  width: 357px;
-  margin-bottom: ${(props) => props.theme.spaces[13]}px;
+  margin-bottom: ${(props) => props.theme.spaces[11]}px;
   margin-top: 3px;
+  background: ${(props) => props.theme.settings.linkBg};
+  padding: 8px 16px;
+  display: inline-block;
 `;
 
 const StyledLink = styled.a`
@@ -37,6 +39,8 @@ const StyledIcon = styled(Icon)`
   }
 `;
 
+const LinkLabel = styled.label``;
+
 export default function Link({ setting }: SettingComponentProps) {
   const dispatch = useDispatch();
   const linkProps: Record<string, string | (() => any)> = {};
@@ -51,14 +55,14 @@ export default function Link({ setting }: SettingComponentProps) {
     };
   }
   return (
-    <FormGroup label={setting.label}>
-      <LinkWrapper>
-        <StyledLink {...linkProps}>
-          <StyledText type={TextType.P1}>READ MORE</StyledText>
-          &nbsp;
-          <StyledIcon icon="arrow-right" iconSize={11} />
-        </StyledLink>
-      </LinkWrapper>
-    </FormGroup>
+    <LinkWrapper>
+      <LinkLabel>{setting.label}</LinkLabel>
+      &nbsp;
+      <StyledLink {...linkProps}>
+        <StyledText type={TextType.P1}>READ MORE</StyledText>
+        &nbsp;
+        <StyledIcon icon="arrow-right" iconSize={11} />
+      </StyledLink>
+    </LinkWrapper>
   );
 }

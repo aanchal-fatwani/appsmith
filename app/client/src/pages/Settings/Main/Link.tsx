@@ -7,7 +7,7 @@ import { Setting } from "../SettingsConfig";
 import { FormGroup, SettingComponentProps } from "./Common";
 
 const LinkWrapper = styled.div`
-  margin-bottom: ${(props) => props.theme.spaces[11]}px;
+  margin-bottom: ${(props) => props.theme.spaces[12]}px;
   margin-top: 3px;
   background: ${(props) => props.theme.settings.linkBg};
   padding: 8px 16px;

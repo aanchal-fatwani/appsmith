@@ -56,7 +56,7 @@ const Spacing = styled.div`
   height: 20px;
 `;
 
-function ToggleComponent({ setting }: SettingComponentProps) {
+export function ToggleComponent({ setting }: SettingComponentProps) {
   return (
     <StyledFieldToggleGroup>
       <FormGroup setting={setting}>

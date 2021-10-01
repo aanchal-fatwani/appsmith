@@ -47,9 +47,11 @@ export type Setting = {
 
 export class SettingsFactory {
   static settingsMap: Record<string, Setting> = {};
+  static settings: Setting[] = [];
   static categories: Set<string> = new Set();
   static savableCategories: Set<string> = new Set();
   static sortOrder = 0;
+  static subCategoryMap: Record<any, any> = {};
 
   static register(name: string, options: Setting) {
     SettingsFactory.categories.add(options.category);
@@ -64,6 +66,39 @@ export class SettingsFactory {
     ) {
       SettingsFactory.savableCategories.add(options.category);
     }
+
+    if (options.subCategory) {
+      if (
+        !SettingsFactory.subCategoryMap[
+          `${options.category}.${options.subCategory}`
+        ]
+      ) {
+        SettingsFactory.subCategoryMap[
+          `${options.category}.${options.subCategory}`
+        ] = {
+          name: options.subCategory,
+          category: options.category,
+          controlType: SettingTypes.GROUP,
+          children: [],
+        };
+        SettingsFactory.settings.push(
+          SettingsFactory.subCategoryMap[
+            `${options.category}.${options.subCategory}`
+          ],
+        );
+      }
+      SettingsFactory.subCategoryMap[
+        `${options.category}.${options.subCategory}`
+      ].children.push({
+        name,
+        ...options,
+      });
+    } else {
+      SettingsFactory.settings.push({
+        name,
+        ...options,
+      });
+    }
   }
 
   static validate(name: string, value: string) {
@@ -75,44 +110,10 @@ export class SettingsFactory {
     return "";
   }
 
-  static get(config: any, category: string) {
-    const settings: any[] = [];
-    const subCategoryMap: any = {};
-
-    _.forEach(SettingsFactory.settingsMap, (options, name) => {
-      if (options.category !== category) {
-        return;
-      }
-      if (options.subCategory) {
-        if (!subCategoryMap[options.subCategory]) {
-          subCategoryMap[options.subCategory] = {
-            name: options.subCategory,
-            controlType: SettingTypes.GROUP,
-            children: [],
-          };
-          settings.push(subCategoryMap[options.subCategory]);
-        }
-        subCategoryMap[options.subCategory].children.push({
-          name,
-          value:
-            options.controlType == "TOGGLE"
-              ? (config[name] || "").toString() == "true"
-              : config[name],
-          ...options,
-        });
-      } else {
-        settings.push({
-          name,
-          value:
-            options.controlType == "TOGGLE"
-              ? (config[name] || "").toString() == "true"
-              : config[name],
-          ...options,
-        });
-      }
-    });
-
-    return settings;
+  static get(category: string) {
+    return SettingsFactory.settings.filter(
+      (setting) => setting.category === category,
+    );
   }
 }
 
@@ -224,13 +225,14 @@ SettingsFactory.register("APPSMITH_ADMIN_EMAILS", {
   },
 });
 
-SettingsFactory.register("APPSMITH_DOWNLOAD_DOCKER_COMPOSE_FILE", {
-  action: () => ({ type: ReduxActionTypes.DOWNLOAD_DOCKER_COMPOSE_FILE }),
-  category: "general",
-  controlType: SettingTypes.BUTTON,
-  label: "Generated Docker Compose File",
-  text: "Download",
-});
+//To be uncommented when api is available
+// SettingsFactory.register("APPSMITH_DOWNLOAD_DOCKER_COMPOSE_FILE", {
+//   action: () => ({ type: ReduxActionTypes.DOWNLOAD_DOCKER_COMPOSE_FILE }),
+//   category: "general",
+//   controlType: SettingTypes.BUTTON,
+//   label: "Generated Docker Compose File",
+//   text: "Download",
+// });
 
 SettingsFactory.register("APPSMITH_DISABLE_TELEMETRY", {
   category: "general",

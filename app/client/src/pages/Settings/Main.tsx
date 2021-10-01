@@ -81,7 +81,7 @@ const StyledClearButton = styled(StyledButton)`
 `;
 
 export const BottomSpace = styled.div`
-  height: ${(props) => props.theme.settings.footerHeight}px;
+  height: ${(props) => props.theme.settings.footerHeight + 20}px;
 `;
 
 export const SettingsHeader = styled.h2`
@@ -103,9 +103,7 @@ function useSettings(
   config: Record<string, string | boolean>,
   category: string,
 ) {
-  return SettingsFactory.get(config, category).sort((a, b) =>
-    a.sortOrder < b.sortOrder ? -1 : 1,
-  );
+  return SettingsFactory.get(category);
 }
 
 export function Main(
